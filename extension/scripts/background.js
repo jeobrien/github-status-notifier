@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (key in changes) {
       var storageChange = changes[key];
       if (storageChange.newValue) {
-        if (storageChange.newValue !== storageChange.oldValue && storageChange.newValue !== "Unknown") {
+        if (storageChange.newValue !== storageChange.oldValue && storageChange.newValue.status !== "Unknown") {
           let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
           chrome.notifications.create(notificationId, {
             type: 'basic',
