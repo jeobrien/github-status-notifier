@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateStorage(newStatus) {
     if (newStatus) {
       chrome.storage.local.get(null, data => {
-        newStatus["lastModified"] = data[newStatus.id]["lastModified"];
+        newStatus["lastModified"] = data[newStatus.id] && data[newStatus.id]["lastModified"];
         data[newStatus.id] = newStatus;
         chrome.storage.local.set(data);
       });
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   chrome.alarms.create({
-    periodInMinutes: 0.3
+    periodInMinutes: 1
   });
 
   chrome.alarms.onAlarm.addListener(update);
