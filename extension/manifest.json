@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "GitHub Status Notifier",
+  "version": "0.1",
+  "description": "Displays your GitHub build statuses",
+  "homepage_url": "https://github.com/jeobrien/github-status-notifier",
+  "minimum_chrome_version": "46",
+  "icons": {
+    "128": "assets/images/icon-lg.png"
+  },
+  "permissions": [
+    "notifications",
+    "alarms",
+    "tabs",
+    "storage",
+    "webNavigation"
+  ],
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "scripts/background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": {
+      "38": "assets/images/icon.png"
+    },
+    "default_title": "GitHub Status Notifier",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  }
+}

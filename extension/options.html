@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>GitHub Status Notifier</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/options.css">
+  </head>
+  <body>
+    <form id="form-settings" action="#">
+      <section>
+        <h3>API Access</h3>
+        <label for="access-token">Access Token</label>
+        <input type="text" id="access-token">
+        <span class="description"><a href="https://github.com/settings/tokens/new?scopes=notifications&description=Notifier for GitHub Chrome extension" target="gh_target">create a token</a> with the <strong>notifications</strong> permission and paste it here.</span><br />
+      </section>
+      <section>
+        <button class="btn btn-primary" type="submit">Save</button>
+        <button class="btn" id="btn-cancel">Cancel</button>
+        <button class="btn" id="btn-reset">Reset</button>
+      </section>
+      <script src="scripts/options.js"></script>
+    </form>
+  </body>
+</html>
