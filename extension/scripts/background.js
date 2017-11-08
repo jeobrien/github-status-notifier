@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tabId: tabId,
         sha: statusResult.head.sha,
         lastModified: statusResult.lastModified,
+        commentsCount: statusResult.review_comments || 0,
       }
     }
     return undefined;
@@ -191,28 +192,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  function _createNotification(notificationId, title, message) {
+    chrome.notifications.create(notificationId, {
+      type: 'basic',
+      iconUrl: 'assets/images/icon-lg.png',
+      title: title,
+      message: message,
+    });
+  }
+
   chrome.storage.onChanged.addListener((changes, namespace) => {
     for (key in changes) {
       var storageChange = changes[key];
       if (storageChange.newValue) {
-        if (storageChange.newValue !== storageChange.oldValue && storageChange.newValue.status !== "Unknown") {
-          let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
-          chrome.notifications.create(notificationId, {
-            type: 'basic',
-            iconUrl: 'assets/images/icon-lg.png',
-            title: storageChange.newValue.title,
-            message: storageChange.newValue.status || "{}",
-          });
+        if (storageChange.newValue !== storageChange.oldValue) {
+          if (storageChange.newValue.status !== "Unknown") {
+            let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
+            _createNotification(notificationId, storageChange.newValue.title, storageChange.newValue.status || "{}")
+          }
+          if (storageChange.oldValue) {
+            if (storageChange.newValue.commentsCount !== storageChange.oldValue.commentsCount) {
+              let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.commentsCount}`;
+              _createNotification(notificationId, storageChange.newValue.title, "New comment");
+            }
+          }
         }
       }
     }
   });
 
 });
+
 // chrome.storage.local.clear()
-chrome.notifications.getAll(all => {
-  console.log(all);
-});
-chrome.storage.local.get(null, data => {
-  console.log(data)
-});
+// chrome.notifications.getAll(all => {
+//   console.log(all);
+// });
+// chrome.storage.local.get(null, data => {
+//   console.log(data)
+// });
