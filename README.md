@@ -5,7 +5,7 @@
 ## What it does
 
 - Desktop notifications when a CI build passes, fails, gets approved, or is merged
-- Popup shows the status of each PR and links to it
+- Popup shows the status of each PR and links to it (click on Desktop notifications to go to the tab)
 
 *You need to add a token in the options on setup.*
 
