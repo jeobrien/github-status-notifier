@@ -9,8 +9,8 @@
 
 *You need to add a token in the options on setup.*
 
-![](screenshot.png)
-![](screenshot-webstore2.png)
+![](extensions/assets/notification.png)
+![](extensions/assets/ok-status.png)
 
 
 ## To run this extension locally
