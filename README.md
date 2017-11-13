@@ -9,8 +9,8 @@
 
 *You need to add a token in the options on setup.*
 
-![](extensions/assets/notification.png)
-![](extensions/assets/ok-status.png)
+![Notifications Screenshot](https://github.com/jeobrien/github-status-notifier/blob/master/extension/assets/images/notifications.png)
+![Status Screenshot](https://github.com/jeobrien/github-status-notifier/blob/master/extension/assets/images/ok-status.png)
 
 
 ## To run this extension locally
