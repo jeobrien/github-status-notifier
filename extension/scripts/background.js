@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function isPullRequest(url) {
-    return url.includes("https://github.com") && url.includes("/pull/")
+    return url.includes("https://github.com") && url.includes("/pull/");
   }
 
   function requestPRStatus(repo, number, tabId, lastModified) {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return makeRequest(url, lastModified).then(response => {
       saveLastModified(response.url, response.headers.get('Last-Modified'));
-      return response.status === 200 ? response.json() : Promise.resolve();
+      return response.status === 200 ? response.json() : new Promise.resolve();
     }).then(jsonData => {
       return getNotification(jsonData, tabId);
     });
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.storage.local.get(null, localItems => {
         let copy = Object.assign({}, localItems);
 
-        for (var key in copy) {
+        for (let key in copy) {
           if (copy[key]["url"] === url) {
             copy[key]["lastModified"] = lastModified;
             chrome.storage.local.set(copy);
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'If-Modified-Since': ifModifiedSince || '',
     };
 
-    return fetch(url, {headers});
+    return fetch(url, { headers });
   }
 
   function getStatusImg(state) {
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sha: statusResult.head.sha,
         lastModified: statusResult.lastModified,
         commentsCount: statusResult.review_comments || 0,
-      }
+      };
     }
     return undefined;
   }
@@ -124,10 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function deleteStatus(tabId) {
     chrome.storage.local.get(null, data => {
-      for (var key in data) {
+      for (let key in data) {
         if (data[key].tabId === tabId) {
-          chrome.storage.local.remove(key, () => {
-          })
+          chrome.storage.local.remove(key, () => {});
         }
       }
     });
@@ -139,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function update() {
     chrome.storage.local.get(null, localItems => {
-      for (var key in localItems) {
+      for (let key in localItems) {
         let existingStatus = localItems[key];
         requestPRStatus(existingStatus.repoName, existingStatus.number, existingStatus.tabId, existingStatus.lastModified).then(updatedStatus => {
           if (updatedStatus && updatedStatus.status === "Pending") {
@@ -151,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusToShow = "Review Required";
                 imageToShow = "assets/images/review-required.png";
               }
-              let copy = Object.assign(updatedStatus, {status: statusToShow, img: imageToShow});
+              let copy = Object.assign(updatedStatus, { status: statusToShow, img: imageToShow });
               updateStorage(copy);
             });
           } else if (updatedStatus) {
@@ -170,11 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   chrome.notifications.onClicked.addListener(id => {
     let tabId = parseInt(id.split(":")[1]);
-    chrome.tabs.update(tabId, {"active": true, "selected": true});
+    chrome.tabs.update(tabId, { "active": true, "selected": true });
   });
 
   chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    deleteStatus(tabId)
+    deleteStatus(tabId);
   });
 
   chrome.webNavigation.onDOMContentLoaded.addListener(tab => {
@@ -202,13 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
-    for (key in changes) {
-      var storageChange = changes[key];
+    for (let key in changes) {
+      let storageChange = changes[key];
       if (storageChange.newValue) {
         if (storageChange.newValue !== storageChange.oldValue) {
           if (storageChange.newValue.status !== "Unknown") {
             let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
-            _createNotification(notificationId, storageChange.newValue.title, storageChange.newValue.status || "{}")
+            _createNotification(notificationId, storageChange.newValue.title, storageChange.newValue.status || "{}");
           }
           if (storageChange.oldValue) {
             if (storageChange.newValue.commentsCount !== storageChange.oldValue.commentsCount) {
