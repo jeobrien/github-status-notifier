@@ -201,37 +201,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function createNotificationsAsNecessary(oldValue, newValue) {
-    if (shouldIgnoreChanges(oldValue, newValue)) {
-      return;
-    }
-    if (shouldCreateNewStatusNotification(oldValue, newValue)) {
-      let notificationId = `TabID:${newValue.tabId}:${newValue.status}`;
-      _createNotification(notificationId, newValue.title, newValue.status);
-    }
-    if (shouldCreateNewCommentNotification(oldValue, newValue)) {
-      let notificationId = `TabID:${newValue.tabId}:${newValue.commentsCount}`;
-      _createNotification(notificationId, newValue.title, "New comment");
-    }
+    if (shouldIgnoreChanges(oldValue, newValue)) return;
+    createNewStatusNotificationifNecessary(oldValue, newValue);
+    createNewCommentNotificationifNecessary(oldValue, newValue);
   }
 
   function shouldIgnoreChanges(oldValue, newValue) {
-    if (!newValue) return true;
+    if (!newValue || !oldValue) return true;
     if (newValue.status === oldValue.status) return true;
-    if (newValue.status === "Merged" && !oldValue.status) return true;
     return false;
   }
 
-  function shouldCreateNewStatusNotification(oldValue, newValue) {
-    return newValue.status !== "Unknown";
+  function createNewStatusNotificationifNecessary(oldValue, newValue) {
+    if (newValue.status === "Unknown") return;
+    let notificationId = `TabID:${newValue.tabId}:${newValue.status}`;
+    _createNotification(notificationId, newValue.title, newValue.status);
   }
 
-  function shouldCreateNewCommentNotification(oldValue, newValue) {
-    return newValue.commentsCount !== oldValue.commentsCount;
+  function createNewCommentNotificationifNecessary(oldValue, newValue) {
+    if (newValue.commentsCount === oldValue.commentsCount) return;
+    let notificationId = `TabID:${newValue.tabId}:${newValue.commentsCount}`;
+    _createNotification(notificationId, newValue.title, "New comment");
   }
 
-  chrome.storage.onChanged.addListener((changes, namespace) => {
+  chrome.storage.onChanged.addListener(changes => {
     for (let key in changes) {
-      let { oldValue = {}, newValue } = changes[key];
+      let { oldValue, newValue } = changes[key];
       createNotificationsAsNecessary(oldValue, newValue);
     }
   });
