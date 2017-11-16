@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function _createNotification(notificationId, title, message) {
+  function _createNotification(notificationId, title, message = "{}") {
     chrome.notifications.create(notificationId, {
       type: 'basic',
       iconUrl: 'assets/images/icon-lg.png',
@@ -199,24 +199,40 @@ document.addEventListener('DOMContentLoaded', () => {
       message: message,
     });
   }
+  
+  function createNotificationsAsNecessary(oldValue, newValue) {
+    if (shouldIgnoreChanges(oldValue, newValue)) {
+      return;
+    }
+    if (shouldCreateNewStatusNotification(oldValue, newValue)) {
+      let notificationId = `TabID:${newValue.tabId}:${newValue.status}`;
+      _createNotification(notificationId, newValue.title, newValue.status);
+    }
+    if (shouldCreateNewCommentNotification(oldValue, newValue)) {
+      let notificationId = `TabID:${newValue.tabId}:${newValue.commentsCount}`;
+      _createNotification(notificationId, newValue.title, "New comment");
+    }
+  }
+
+  function shouldIgnoreChanges(oldValue, newValue) {
+    if (!newValue) return true;
+    if (newValue.status === oldValue.status) return true;
+    if (newValue.status === "Merged" && !oldValue.status) return true;
+    return false;
+  }
+
+  function shouldCreateNewStatusNotification(oldValue, newValue) {
+    return newValue.status !== "Unknown";
+  }
+
+  function shouldCreateNewCommentNotification(oldValue, newValue) {
+    return newValue.commentsCount !== oldValue.commentsCount;
+  }
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
     for (let key in changes) {
-      let storageChange = changes[key];
-      if (storageChange.newValue) {
-        if (storageChange.newValue !== storageChange.oldValue) {
-          if (storageChange.newValue.status !== "Unknown") {
-            let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
-            _createNotification(notificationId, storageChange.newValue.title, storageChange.newValue.status || "{}");
-          }
-          if (storageChange.oldValue) {
-            if (storageChange.newValue.commentsCount !== storageChange.oldValue.commentsCount) {
-              let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.commentsCount}`;
-              _createNotification(notificationId, storageChange.newValue.title, "New comment");
-            }
-          }
-        }
-      }
+      let { oldValue = {}, newValue } = changes[key];
+      createNotificationsAsNecessary(oldValue, newValue);
     }
   });
 
