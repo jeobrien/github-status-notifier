@@ -28,7 +28,7 @@ function renderSetting() {
   link.addEventListener('click', _openSettings);
 }
 
-function _openSettings(e) {
+function _openSettings() {
   const url = `chrome://extensions/?options=${chrome.runtime.id}`;
   chrome.tabs.create({'url': url});
 }
@@ -41,7 +41,7 @@ function renderStatuses(notifications) {
   } else {
     content = document.createElement('div');
     content.classList.add('center');
-    content.textContent = 'Open a tab with a PR to see its status here.'
+    content.textContent = 'Open a tab with a PR to see its status here.';
   }
   divContainer.innerHTML = '';
   divContainer.appendChild(content);
