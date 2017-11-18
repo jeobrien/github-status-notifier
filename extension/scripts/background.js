@@ -1,11 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // TODO replace this with api call to https://api.github.com/repos/intercom/{repo}/branches/master/protection/required_status_checks, token needs admin access though
-  const REQUIRED_STATUS_CHECKS = {
-    embercom: ["buildkite/embercom"],
-    intercom: ["buildkite/intercom-development-environment", "buildkite/rubocop"],
-  };
-
   function isPullRequest(url) {
     return url.includes("https://github.com") && url.includes("/pull/");
   }
@@ -172,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.tabs.update(tabId, { "active": true, "selected": true });
   });
 
-  chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  chrome.tabs.onRemoved.addListener(tabId => {
     deleteStatus(tabId);
   });
 
@@ -200,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  chrome.storage.onChanged.addListener((changes, namespace) => {
+  chrome.storage.onChanged.addListener(changes => {
     for (let key in changes) {
       let storageChange = changes[key];
       if (storageChange.newValue) {
