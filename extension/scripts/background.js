@@ -196,8 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function createNotificationsAsNecessary(oldValue, newValue) {
     if (shouldIgnoreChanges(oldValue, newValue)) return;
-    createNewStatusNotificationifNecessary(oldValue, newValue);
-    createNewCommentNotificationifNecessary(oldValue, newValue);
+    createNewStatusNotificationIfNecessary(oldValue, newValue);
+    createNewCommentNotificationIfNecessary(oldValue, newValue);
   }
 
   function shouldIgnoreChanges(oldValue, newValue) {
@@ -206,13 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  function createNewStatusNotificationifNecessary(oldValue, newValue) {
+  function createNewStatusNotificationIfNecessary(oldValue, newValue) {
     if (newValue.status === "Unknown") return;
     let notificationId = `TabID:${newValue.tabId}:${newValue.status}`;
     _createNotification(notificationId, newValue.title, newValue.status);
   }
 
-  function createNewCommentNotificationifNecessary(oldValue, newValue) {
+  function createNewCommentNotificationIfNecessary(oldValue, newValue) {
     if (newValue.commentsCount === oldValue.commentsCount) return;
     let notificationId = `TabID:${newValue.tabId}:${newValue.commentsCount}`;
     _createNotification(notificationId, newValue.title, "New comment");
