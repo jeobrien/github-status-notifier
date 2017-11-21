@@ -155,6 +155,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function createNotificationsIfNecessary(oldValue, newValue) {
+    if (shouldIgnoreChanges(oldValue, newValue)) return;
+    createNewStatusNotificationIfNecessary(oldValue, newValue);
+    createNewCommentNotificationIfNecessary(oldValue, newValue);
+  }
+
+  function shouldIgnoreChanges(oldValue, newValue) {
+    if (!newValue || !oldValue) return true;
+    if (newValue.status === oldValue.status) return true;
+    return false;
+  }
+
+  function createNewStatusNotificationIfNecessary(oldValue, newValue) {
+    if (newValue.status === "Unknown") return;
+    let notificationId = `TabID:${newValue.tabId}:${newValue.status}`;
+    _createNotification(notificationId, newValue.title, newValue.status);
+  }
+
+  function createNewCommentNotificationIfNecessary(oldValue, newValue) {
+    if (newValue.commentsCount === oldValue.commentsCount) return;
+    let notificationId = `TabID:${newValue.tabId}:${newValue.commentsCount}`;
+    _createNotification(notificationId, newValue.title, "New comment");
+  }
+
+  function _createNotification(notificationId, title, message = "{}") {
+    chrome.notifications.create(notificationId, {
+      type: 'basic',
+      iconUrl: 'assets/images/icon-lg.png',
+      title: title,
+      message: message,
+    });
+  }
+
   chrome.alarms.create({
     periodInMinutes: 1
   });
@@ -185,32 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function _createNotification(notificationId, title, message) {
-    chrome.notifications.create(notificationId, {
-      type: 'basic',
-      iconUrl: 'assets/images/icon-lg.png',
-      title: title,
-      message: message,
-    });
-  }
-
   chrome.storage.onChanged.addListener(changes => {
     for (let key in changes) {
-      let storageChange = changes[key];
-      if (storageChange.newValue) {
-        if (storageChange.newValue !== storageChange.oldValue) {
-          if (storageChange.newValue.status !== "Unknown") {
-            let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.status}`;
-            _createNotification(notificationId, storageChange.newValue.title, storageChange.newValue.status || "{}");
-          }
-          if (storageChange.oldValue) {
-            if (storageChange.newValue.commentsCount !== storageChange.oldValue.commentsCount) {
-              let notificationId = `TabID:${storageChange.newValue.tabId}:${storageChange.newValue.commentsCount}`;
-              _createNotification(notificationId, storageChange.newValue.title, "New comment");
-            }
-          }
-        }
-      }
+      let { oldValue, newValue } = changes[key];
+      createNotificationsIfNecessary(oldValue, newValue);
     }
   });
 
